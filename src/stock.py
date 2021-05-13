@@ -201,3 +201,10 @@ class Stock():
             self.stock_data['Momentum{}'.format(period)] = momentum_values
         else:
             return momentum_values
+
+    def returns(self, start,end):
+        if not start:
+            start = self.stock_data.index[0]
+        if not end:
+            end = self.stock_data.index[-1]
+            
