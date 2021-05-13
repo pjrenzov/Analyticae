@@ -202,9 +202,21 @@ class Stock():
         else:
             return momentum_values
 
-    def returns(self, start,end):
+    def returns(self, start,end,add=True,method='SIMP'):
         if not start:
             start = self.stock_data.index[0]
         if not end:
             end = self.stock_data.index[-1]
-            
+        if add:
+            if method=='SIMP':
+                self.stock_data['Simple_return'] = self.stock_data['Adj Close']
+                self.stock_data['Simple_return'] = self.stock_data.Simple_return.pct_change()
+            else:
+                self.stock_data['log_returns'] = self.stock_data['Adj Close']
+                self.stock_data['log_returns'] = np.log(self.stock_data.log_returns/self.stock_data.log_returns.shift(1))
+        else:
+            prices = self.stock_data['Adj Close']
+            if method=='SIMP':
+                return prices.pct_change()
+            else:
+                return np.log(prices/prices.shift(1))
