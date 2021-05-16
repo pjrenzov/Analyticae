@@ -1,7 +1,7 @@
 from pandas_datareader import data
 from statistics import mean 
 from math import sqrt
-from pandas import Series
+from pandas import Series,Grouper
 import numpy as np
 
 class Stock():
@@ -220,3 +220,9 @@ class Stock():
                 return prices.pct_change()
             else:
                 return np.log(prices/prices.shift(1))
+    
+    def realized_volatility(x):
+        return np.sqrt(np.sum(x**2))
+    
+    def RV(self):
+        return self.stock_data.groupby(Grouper(freq='M')).apply(self.realized_volatility)
