@@ -202,7 +202,7 @@ class Stock():
         else:
             return momentum_values
 
-    def returns(self, start,end,add=True,method='SIMP'):
+    def returns(self, start=None,end=None,add=True,method='SIMP'):
         if not start:
             start = self.stock_data.index[0]
         if not end:
@@ -221,8 +221,13 @@ class Stock():
             else:
                 return np.log(prices/prices.shift(1))
     
-    def realized_volatility(x):
+    def realized_volatility(self,x):
         return np.sqrt(np.sum(x**2))
     
     def RV(self):
-        return self.stock_data.groupby(Grouper(freq='M')).apply(self.realized_volatility)
+        try:
+            rv = self.stock_data['log_returns']
+        except:
+            self.returns(method='LOG')
+            rv = self.stock_data['log_returns']
+        return self.stock_data.groupby(Grouper(freq='M')).apply(self.realized_volatility).log_returns*np.sqrt(12)
