@@ -69,6 +69,7 @@ class supportAndResistence(Stock):
             date=self.end_date
         temp_sig = self.signal[:date]
         temp_sig = self.signal[self.signal['Positions']!=0.0]
+        print("Given most recent call on: {}".format(temp_sig.index[-1]))
         return self.Call(temp_sig.index[-1])
     
     def makePortfolio(self,start=None,end=None,capital=None):

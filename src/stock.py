@@ -14,7 +14,7 @@ class Stock():
     def load_data(self,path=None):
         self.stock_data = data.DataReader(self.symbol, 'yahoo', self.start_date,self.end_date)
     
-    def showChart(self,start_date,end_date):
+    def showChart(self,start_date,end_date,subplots={}):
         #ToDo
         return
 
