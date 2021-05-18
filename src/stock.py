@@ -1,8 +1,10 @@
+from pandas.core.frame import DataFrame
 from pandas_datareader import data
 from statistics import mean 
 from math import sqrt
 from pandas import Series,Grouper
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Stock():
     def __init__(self,symbol,start_date,end_date):
@@ -215,7 +217,8 @@ class Stock():
                 self.stock_data['log_returns'] = self.stock_data['Adj Close']
                 self.stock_data['log_returns'] = np.log(self.stock_data.log_returns/self.stock_data.log_returns.shift(1))
         else:
-            prices = self.stock_data['Adj Close']
+            prices = DataFrame()
+            prices['Return'] = self.stock_data.loc[start:end,'Adj Close']
             if method=='SIMP':
                 return prices.pct_change()
             else:
@@ -231,3 +234,37 @@ class Stock():
             self.returns(method='LOG')
             rv = self.stock_data['log_returns']
         return self.stock_data.groupby(Grouper(freq='M')).apply(self.realized_volatility).log_returns*np.sqrt(12)
+
+    def indentify_outliers(self,row,n_sigmas=3):
+        x = row['Return']
+        mu = row['mean']
+        sigma = row['std']
+        if (x > mu + 3 * sigma) | (x < mu - 3 * sigma):
+            return 1
+        else:
+            return 0
+
+    def findOutliers(self,start=None,end=None,n_sigma=3,window=21,plot=True):
+        if not start:
+            start = self.stock_data.index[0]
+        if not end:
+            end = self.stock_data.index[-1]
+
+        outlier = DataFrame(self.returns(start=start,end=end,add=False))
+        temp = outlier[['Return']].rolling(window=window).agg(['mean','std'])
+        temp.columns = temp.columns.droplevel()
+        outlier = outlier.join(temp)
+        outlier['outlier'] = outlier.apply(self.indentify_outliers,axis=1)
+        outliers = outlier.loc[outlier['outlier']==1,['Return']]
+        if plot:
+            fig, ax = plt.subplots()
+            ax.plot(outlier.index, outlier.Return,
+                    color='blue', label='Normal')
+            ax.scatter(outliers.index, outliers.Return,
+                        color='red', label='Anomaly')
+            ax.set_title("{}'s stock returns".format(self.symbol))
+            ax.legend(loc='lower right')
+        return outliers
+
+
+            
