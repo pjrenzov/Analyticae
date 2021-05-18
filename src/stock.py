@@ -264,7 +264,4 @@ class Stock():
                         color='red', label='Anomaly')
             ax.set_title("{}'s stock returns".format(self.symbol))
             ax.legend(loc='lower right')
-        return outliers
-
-
-            
+        return outliers      
