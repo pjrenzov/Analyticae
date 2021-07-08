@@ -1,4 +1,4 @@
-# quant
+# Analyticae
 
 This repository contain my intial works which I learned from different books for quantitative analysis and algorithmic trading.
 Main aim of this repository is to learn basics for algorithmic trading in order to build my personal project based on systematic data driven approach to 
